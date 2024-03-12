@@ -1,11 +1,10 @@
 import main
-import redis
 import json
-import os
-
-twitter = main.make_token()
 client_id = "NlNDVzNobC1INFljZll3ZjFxZHk6MTpjaQ"
 client_secret = "T4G1mwQ9862ljR96L9pIHWBQjMaYncSz65yzlzbeCUmIyM5ovM"
+
+twitter = main.make_token()
+
 token_url = "https://api.twitter.com/2/oauth2/token"
 
 t = main.r.get("token")

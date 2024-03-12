@@ -4,16 +4,17 @@ import os
 import re
 import json
 import requests
-from rewrite import rewrite
-from requests.auth import AuthBase, HTTPBasicAuth
 from requests_oauthlib import OAuth2Session, TokenUpdated
 from flask import Flask, request, redirect, session, url_for, render_template
 
 app = Flask(__name__)
 app.secret_key = os.urandom(50)
 
-client_id = "SFA3WjhlbUJWaHpHcngyMUVlVko6MTpjaQ"
-client_secret = "KbeekJ5cyciRFwfwJWWEOSldTBZEABtBWcRXGJ0WZeJKTv3lAQ"
+content = "Hello world"
+client_id = ""
+client_secret = ""
+language = ""
+
 auth_url = "https://twitter.com/i/oauth2/authorize"
 token_url = "https://api.twitter.com/2/oauth2/token"
 redirect_uri = "http://127.0.0.1:5000/oauth/callback"
@@ -26,11 +27,6 @@ code_verifier = re.sub("[^a-zA-Z0-9]+", "", code_verifier)
 code_challenge = hashlib.sha256(code_verifier.encode("utf-8")).digest()
 code_challenge = base64.urlsafe_b64encode(code_challenge).decode("utf-8")
 code_challenge = code_challenge.replace("=", "")
-
-content = "We've identified an issue affecting new mining sessions and showing negative timers. Our team is actively working on a fix. In the meantime, try logging out and in to initiate a new session."
-language = "Japanese"
-style = "cute"
-re_content = rewrite(content, style, language)
 
 
 def make_token():
@@ -60,7 +56,6 @@ def demo():
     session["oauth_state"] = state
     return redirect(authorization_url)
 
-
 @app.route("/oauth/callback", methods=["GET"])
 def callback():
     code = request.args.get("code")
@@ -72,13 +67,13 @@ def callback():
     )
     st_token = '"{}"'.format(token)
     j_token = json.loads(st_token)
+    # store the token
     filename = 'token.json'
     with open(filename, 'w') as file:
         json.dump(j_token, file)
-    payload = {"text": "{}".format(re_content)}
+    payload = {"text": "{}".format(content)}
     response = post_tweet(payload, token).json()
     return response
 
 
-if __name__ == "__main__":
-    app.run()
+app.run()
